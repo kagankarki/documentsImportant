@@ -42,7 +42,13 @@
     background:var(--bg);color:var(--text);
     min-height:100vh;padding:56px 20px 72px;
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    transition:background-color .55s ease,color .55s ease;
   }
+  /* tema geçişini yumuşat (renkleri kullanan yüzeyler cross-fade olur) */
+  .mark,.card,.glyph,.seg > i,.dl,.rewards{
+    transition:background-color .55s ease,color .55s ease,border-color .55s ease,box-shadow .55s ease;
+  }
+  h1,.sub,.lead,.note,.qmeta,.qtext{transition:color .55s ease}
   .wrap{max-width:600px;margin:0 auto}
 
   header{text-align:center;margin-bottom:34px}
