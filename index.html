@@ -218,7 +218,7 @@ const POOL = [
   { q:"İdil'in Büyük Kolej'de kreşte en yakın arkadaşının adı ne?",
     options:["Yaren","Alya","İrem","Cansu"], answer:"Yaren" },
   { q:"Emel ilk defa VakıfBank konağında tatilde hangi şehre götürdü?",
-    options:["Balıkesir","Efes","Ayvalık","Antalya"], answer:"Ayvalık" },
+    options:["Cunda","Efes","Ayvalık","Antalya"], answer:"Ayvalık" },
   { q:"Evdeki ebeveyn odasındaki yatağın bazası nereden alındı?",
     options:["Siteler","Bellona","Çilek","Kelebek"], answer:"Siteler" },
   { q:"İdil'e bu zamana kadar kaç telefon alındı?",
@@ -259,17 +259,23 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random(
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 /* ---------- Ekranlar ---------- */
+function applyTheme(t){
+  if(t) document.documentElement.setAttribute("data-theme",t);
+  else document.documentElement.removeAttribute("data-theme");
+}
 function setTheme(t){
-  document.documentElement.setAttribute("data-theme",t);
+  applyTheme(t);
   try{localStorage.setItem("theme",t)}catch(e){}
 }
 
 function showTheme(){
+  let committed=null; try{committed=localStorage.getItem("theme")}catch(e){}
+  applyTheme(committed);
   stage.className="card fade";
   stage.innerHTML=`
     <div class="center">
       <p class="lead">Tema seç</p>
-      <p class="note">Oyunu hangi görünümde oynamak istersin?</p>
+      <p class="note">Üzerine gelince önizle, seçmek için tıkla.</p>
     </div>
     <div class="themes">
       <button class="theme-opt light" data-theme-pick="light">
@@ -277,8 +283,11 @@ function showTheme(){
       <button class="theme-opt dark" data-theme-pick="dark">
         <span class="ti">${I.moon}</span><span class="tn">Karanlık</span></button>
     </div>`;
-  document.querySelectorAll("[data-theme-pick]").forEach(b=>
-    b.onclick=()=>{setTheme(b.dataset.themePick);showStart();});
+  document.querySelectorAll("[data-theme-pick]").forEach(b=>{
+    b.onmouseenter=()=>applyTheme(b.dataset.themePick);   // canlı önizleme
+    b.onmouseleave=()=>applyTheme(committed);             // fare çekilince eski hale
+    b.onclick=()=>{committed=b.dataset.themePick;setTheme(committed);showStart();};
+  });
 }
 
 function showStart(){
