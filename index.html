@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Belge Hazinesi</title>
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#ffffff;
+    --text:#1d1d1f; --text2:#6e6e73;
+    --sep:rgba(0,0,0,.10); --fill:rgba(0,0,0,.03); --fill-2:rgba(0,0,0,.05);
+    --blue:#0071e3; --blue-2:#0077ed;
+    --green:#34c759; --green-bg:rgba(52,199,89,.12);
+    --red:#ff3b30; --red-bg:rgba(255,59,48,.12);
+    --shadow:0 8px 30px rgba(0,0,0,.08);
+    --radius:22px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#000000; --card:#1c1c1e;
+      --text:#f5f5f7; --text2:#98989d;
+      --sep:rgba(255,255,255,.14); --fill:rgba(255,255,255,.05); --fill-2:rgba(255,255,255,.09);
+      --blue:#0a84ff; --blue-2:#409cff;
+      --green:#30d158; --green-bg:rgba(48,209,88,.16);
+      --red:#ff453a; --red-bg:rgba(255,69,58,.16);
+      --shadow:0 8px 30px rgba(0,0,0,.5);
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);
+    min-height:100vh;padding:56px 20px 72px;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:600px;margin:0 auto}
+
+  header{text-align:center;margin-bottom:34px}
+  .mark{
+    width:56px;height:56px;margin:0 auto 20px;border-radius:16px;
+    display:grid;place-items:center;background:var(--card);box-shadow:var(--shadow);
+    color:var(--blue);
+  }
+  .mark svg{width:28px;height:28px}
+  h1{
+    font-size:clamp(30px,7vw,44px);font-weight:700;letter-spacing:-.022em;
+    margin:0 0 10px;line-height:1.05;
+  }
+  .sub{
+    color:var(--text2);margin:0 auto;max-width:460px;
+    font-size:clamp(16px,4vw,19px);line-height:1.45;font-weight:400;letter-spacing:-.01em;
+  }
+  .sub .warn{color:var(--text);font-weight:600}
+
+  .card{
+    background:var(--card);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:34px 30px;
+  }
+  @media(max-width:460px){.card{padding:26px 20px}}
+
+  /* segmented progress */
+  .seg{display:flex;gap:6px;margin-bottom:26px}
+  .seg > i{flex:1;height:4px;border-radius:2px;background:var(--fill-2);overflow:hidden;position:relative}
+  .seg > i::after{content:"";position:absolute;inset:0;width:0;background:var(--blue);
+    border-radius:2px;transition:width .35s ease}
+  .seg > i.done::after{width:100%}
+  .seg > i.now::after{width:100%;background:var(--blue);opacity:.35}
+
+  .qmeta{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.02em;
+    text-transform:uppercase;margin-bottom:10px}
+  .qtext{font-size:clamp(21px,5vw,26px);font-weight:600;letter-spacing:-.018em;
+    line-height:1.28;margin:0 0 26px}
+
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{
+    appearance:none;cursor:pointer;text-align:left;width:100%;
+    background:var(--card);border:1px solid var(--sep);border-radius:14px;
+    padding:17px 18px;font-size:17px;font-weight:500;color:var(--text);
+    letter-spacing:-.01em;line-height:1.3;
+    display:flex;align-items:center;gap:12px;
+    transition:background .18s,border-color .18s,transform .12s;
+  }
+  .opt:hover{background:var(--fill)}
+  .opt:active{transform:scale(.99)}
+  .opt .mk{width:22px;height:22px;flex:none;color:var(--text2);opacity:0;transition:opacity .18s}
+  .opt .mk svg{width:22px;height:22px;display:block}
+  .opt span.lbl{flex:1}
+  .opt.correct{border-color:var(--green);background:var(--green-bg)}
+  .opt.correct .mk{color:var(--green);opacity:1}
+  .opt.wrong{border-color:var(--red);background:var(--red-bg)}
+  .opt.wrong .mk{color:var(--red);opacity:1}
+  .opt.disabled{pointer-events:none}
+  .opt.dim{opacity:.45}
+
+  .btn{
+    appearance:none;cursor:pointer;border:none;font-family:inherit;
+    background:var(--blue);color:#fff;font-size:17px;font-weight:600;letter-spacing:-.01em;
+    padding:14px 28px;border-radius:980px;transition:background .18s,transform .12s;
+  }
+  .btn:hover{background:var(--blue-2)}
+  .btn:active{transform:scale(.97)}
+  .btn.wide{width:100%}
+  .btn.ghost{background:transparent;color:var(--blue)}
+  .btn.ghost:hover{background:var(--fill)}
+
+  .center{text-align:center}
+  .glyph{width:76px;height:76px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center}
+  .glyph svg{width:44px;height:44px}
+  .glyph.ok{background:var(--green-bg);color:var(--green)}
+  .glyph.bad{background:var(--red-bg);color:var(--red)}
+  .glyph.key{background:var(--fill-2);color:var(--blue)}
+  .lead{font-size:clamp(24px,6vw,30px);font-weight:700;letter-spacing:-.02em;margin:0 0 8px}
+  .note{color:var(--text2);font-size:17px;line-height:1.5;margin:0 auto 28px;max-width:420px;letter-spacing:-.01em}
+  .note b{color:var(--text);font-weight:600}
+
+  /* reward list */
+  .rewards{display:flex;flex-direction:column;margin:10px 0 8px;
+    border:1px solid var(--sep);border-radius:16px;overflow:hidden}
+  .dl{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;
+    padding:15px 16px;transition:background .18s;border-top:1px solid var(--sep)}
+  .dl:first-child{border-top:none}
+  .dl:hover{background:var(--fill)}
+  .dl .ic{width:30px;height:30px;flex:none;color:var(--text2)}
+  .dl .ic svg{width:30px;height:30px;display:block}
+  .dl .tx{flex:1;min-width:0}
+  .dl .t{font-size:16px;font-weight:600;letter-spacing:-.01em}
+  .dl .d{color:var(--text2);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+  .dl .go{display:flex;align-items:center;gap:5px;color:var(--blue);font-size:15px;font-weight:600;white-space:nowrap}
+  .dl .go svg{width:17px;height:17px}
+
+  .foot{text-align:center;color:var(--text2);font-size:14px;margin-top:26px;line-height:1.6;letter-spacing:-.01em}
+  .foot b{color:var(--text);font-weight:600}
+
+  .hidden{display:none}
+  #cfx{position:fixed;inset:0;pointer-events:none;z-index:50}
+  .fade{animation:fade .4s cubic-bezier(.22,.61,.36,1)}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .nudge{animation:nudge .4s}
+  @keyframes nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+</style>
+</head>
+<body>
+<canvas id="cfx"></canvas>
+<div class="wrap">
+  <header>
+    <div class="mark" id="mark"></div>
+    <h1>Belge Hazinesi</h1>
+    <p class="sub">Kilidi açan altı soru. Hepsini doğru bilirsen belgeler senin. <span class="warn">Tek yanlışta baştan.</span></p>
+  </header>
+
+  <div class="card" id="stage"></div>
+
+  <p class="foot">
+    Belgeler bu bilgisayarda, klasörün içinde. Açılınca doğrudan iner.<br>
+    Sonra <b>haksahipligi@vakifbank.com.tr</b> adresine göndermeyi unutma.
+  </p>
+</div>
+
+<script>
+/* ---------- SVG ikonlar ---------- */
+const I = {
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10M17 7L7 17"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0l5-5m-5 5l-5-5"/><path d="M5 20h14"/></svg>',
+  cap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M7 11v4c0 1 2.2 2.5 5 2.5S17 16 17 15v-4"/><path d="M21 9v5"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 16h6"/></svg>',
+  health:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 6.5a4.5 4.5 0 0 0-7.7-3.2L12 4l-.8-.7A4.5 4.5 0 1 0 5 9.7l7 7 7-7c.9-.9 1.5-2 1.5-3.2z"/><path d="M8 10h2l1 2 1.5-3 1 1H16"/></svg>',
+  people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 6.2a3 3 0 0 1 0 5.6"/><path d="M17.5 19a5.5 5.5 0 0 0-2-4.3"/></svg>',
+};
+document.getElementById("mark").innerHTML=I.lock;
+
+/* ---------- Soru havuzu (her oyunda 6 tanesi rastgele gelir) ---------- */
+const ROUND = 6;
+const POOL = [
+  { q:"Banyoda askılıkta en sağdaki havlu kime ait?",
+    options:["Tuncay","İdil","Emel","Kağan"], answer:"Kağan" },
+  { q:"YKS öncesi eve gelen Kimya Hocasının ismi ne?",
+    options:["İsmail","Şamil","Ersin","Nurten"], answer:"Şamil" },
+  { q:"Tuncay emekli olduktan sonra kendine nereden ne almayı düşünüyor?",
+    options:["Ege tarafında kendine yazlık","Sivas'ta abisinin yanına taşınacak",
+      "Akdeniz bölgesinde kendine yazlık alacak","Ankara'da kendi evine çıkacak"],
+    answer:"Ege tarafında kendine yazlık" },
+  { q:"Şu anki eve ilk tanışıldığında, Emel çocukları Büyük Kolej'den alıp eve geldiğinde Tuncay nerenin tamiriyle ilgileniyordu?",
+    options:["Mutfak tezgahı tamiri","Tuvaletin tamiri","Gardırobun kolunu tamiri","Çocukların yataklarının tamiri"],
+    answer:"Tuvaletin tamiri" },
+  { q:"İdil'in Büyük Kolej'de kreşte en yakın arkadaşının adı ne?",
+    options:["Yaren","Alya","İrem","Cansu"], answer:"Yaren" },
+  { q:"Emel ilk defa VakıfBank konağında tatilde hangi şehre götürdü?",
+    options:["Cunda","Efes","Ayvalık","Antalya"], answer:"Ayvalık" },
+  { q:"Evdeki ebeveyn odasındaki yatağın bazası nereden alındı?",
+    options:["Siteler","Bellona","Çilek","Kelebek"], answer:"Siteler" },
+  { q:"İdil'e bu zamana kadar kaç telefon alındı?",
+    options:["2","3","4","5"], answer:"4" },
+  { q:"Kağan'ın odasındaki kütüphanenin orta rafında en soldan başlayınca görünen ilk sarı kitabın adı ne?",
+    options:["Celal Şengör'den Atatürk","Percy Jackson Serisi","Büyük İskender","Psikoloji Kitabı"],
+    answer:"Büyük İskender" },
+  { q:"Kağan'ın pert ettiği araba, pert edilmeden önce kaç kilometredeydi?",
+    options:["80.000 – 90.000","90.000 – 105.000","110.000 – 125.000","130.000+"],
+    answer:"110.000 – 125.000" },
+  { q:"Ceren ablanın düğününde yüzüklerin kurdelesi kime teklif edildi ama kim kesti?",
+    options:["Doğan'a teklif edildi ama Tuncay kesti","Tuncay'a teklif edildi ama Tülay kesti",
+      "Tülay'a teklif edildi ama Doğan kesti","Doğan'a teklif edildi ama karşı taraftan biri kesti"],
+    answer:"Doğan'a teklif edildi ama Tuncay kesti" },
+  { q:"Söylentiye göre anneannemin babası Atatürk'e ne ikram etmiştir?",
+    options:["Lokum","Meşrubat","Çay","Kolonya"], answer:"Kolonya" },
+  { q:"Eski bayramlarda anneannem misafirleri topladığında yemekten sonra hangi çikolatalardan verirdi?",
+    options:["Ece çikolata ve draje","Ülker çikolatin ve drajeler","Ülker çikolatalı gofret","Merci çikolata ve draje"],
+    answer:"Ülker çikolatin ve drajeler" },
+  { q:"Gencay'ın Keçiören'deki evine kapıdan girdiğin yönde, salona ilk bakışta yemek masası ne tarafta kalıyor?",
+    options:["Hemen solda","Biraz ileri gidince hemen sağda","Yemek masası mutfaktaydı","Yer sofrası kuruluyordu"],
+    answer:"Hemen solda" },
+];
+
+/* ---------- Ödül belgeleri ---------- */
+const DOCS = [
+  { ic:I.cap,    title:"Öğrenci Belgesi", file:"14635039854_Ogrenci.pdf", save:"Ogrenci-Belgesi.pdf" },
+  { ic:I.doc,    title:"SGK Tescil ve Hizmet Dökümü", file:"Sosyal Güvenlik Kurumu - SGK Tescil ve Hizmet Dökümü _ İşyeri Ünvan Listesi.pdf", save:"SGK-Tescil-Hizmet-Dokumu.pdf" },
+  { ic:I.health, title:"SPAS · Sağlık Provizyon", file:"SGK_SPASMustehaklikBelgesi.pdf", save:"SPAS-Mustehaklik.pdf" },
+  { ic:I.people, title:"Vukuatlı Nüfus Kayıt Örneği", file:"nufus-kayit-ornegi.pdf", save:"Vukuatli-Nufus-Kayit.pdf" },
+];
+
+const stage=document.getElementById("stage");
+let idx=0, locked=false, game=[];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- Ekranlar ---------- */
+function showStart(){
+  idx=0;locked=false;game=[];
+  stage.className="card fade";
+  stage.innerHTML=`
+    <div class="center">
+      <div class="glyph key">${I.lock}</div>
+      <p class="lead">Hazır mısın?</p>
+      <p class="note">Havuzdan rastgele <b>${ROUND} soru</b> soracağım, hepsini doğru bilmen gerekiyor.
+        Bir tanesini yanlış yaparsan oyun biter ve <b>baştan başlarsın</b>.</p>
+      <button class="btn" id="startBtn">Başla</button>
+    </div>`;
+  document.getElementById("startBtn").onclick=startGame;
+}
+
+function startGame(){
+  game=shuffle(POOL).slice(0,ROUND);
+  idx=0;locked=false;
+  renderQuestion();
+}
+
+function renderQuestion(){
+  locked=false;
+  const item=game[idx];
+  const opts=shuffle(item.options);
+  stage.className="card fade";
+  stage.innerHTML=`
+    <div class="seg">${game.map((_,i)=>
+      `<i class="${i<idx?'done':i===idx?'now':''}"></i>`).join("")}</div>
+    <div class="qmeta">Soru ${idx+1} / ${game.length}</div>
+    <p class="qtext">${esc(item.q)}</p>
+    <div class="opts" id="opts">
+      ${opts.map(o=>`<button class="opt" data-val="${esc(o)}">
+        <span class="lbl">${esc(o)}</span><span class="mk"></span></button>`).join("")}
+    </div>`;
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(b,item.answer));
+}
+
+function pick(btn,answer){
+  if(locked)return;locked=true;
+  const chosen=btn.dataset.val;
+  const all=[...document.querySelectorAll(".opt")];
+  all.forEach(b=>b.classList.add("disabled"));
+  if(chosen===answer){
+    btn.classList.add("correct");btn.querySelector(".mk").innerHTML=I.check;
+    all.forEach(b=>{if(b!==btn)b.classList.add("dim")});
+    setTimeout(()=>{idx++; idx>=game.length?showWin():renderQuestion();},640);
+  } else {
+    btn.classList.add("wrong");btn.querySelector(".mk").innerHTML=I.x;
+    document.getElementById("opts").classList.add("nudge");
+    setTimeout(showGameOver,720);
+  }
+}
+
+function showGameOver(){
+  stage.className="card fade";
+  stage.innerHTML=`
+    <div class="center">
+      <div class="glyph bad">${I.x}</div>
+      <p class="lead">Oyun bitti</p>
+      <p class="note">O soruyu yanlış bildin, hazine kapandı.${idx>0?` <b>${idx}. soruya kadar gelmiştin.</b>`:""}<br>İstediğin kadar tekrar deneyebilirsin.</p>
+      <button class="btn" id="retry">Baştan Başla</button>
+    </div>`;
+  document.getElementById("retry").onclick=showStart;
+}
+
+function showWin(){
+  stage.className="card fade";
+  stage.innerHTML=`
+    <div class="center">
+      <div class="glyph ok">${I.check}</div>
+      <p class="lead">Hepsini bildin</p>
+      <p class="note">Hazine açıldı. Dört belge de senin — indir ve VakıfBank'a gönder.</p>
+    </div>
+    <div class="rewards">
+      ${DOCS.map(d=>`
+        <a class="dl" href="${encodeURI(d.file)}" download="${d.save}">
+          <span class="ic">${d.ic}</span>
+          <span class="tx"><div class="t">${esc(d.title)}</div><div class="d">${esc(d.file)}</div></span>
+          <span class="go">İndir ${I.down}</span>
+        </a>`).join("")}
+    </div>
+    <div class="center" style="margin-top:22px">
+      <button class="btn ghost" id="again">Tekrar Oyna</button>
+    </div>`;
+  document.getElementById("again").onclick=showStart;
+  celebrate();
+}
+
+/* ---------- Konfeti (Apple tonları, hafif) ---------- */
+const cv=document.getElementById("cfx"),cx=cv.getContext("2d");
+let parts=[],raf=null;
+const size=()=>{cv.width=innerWidth;cv.height=innerHeight};
+size();addEventListener("resize",size);
+function celebrate(){
+  const colors=["#0071e3","#34c759","#ff9f0a","#ff3b30","#af52de","#5ac8fa"];
+  for(let i=0;i<140;i++)parts.push({
+    x:cv.width/2+(Math.random()-.5)*120,y:cv.height*.32,
+    vx:(Math.random()-.5)*11,vy:Math.random()*-9-3,
+    s:Math.random()*6+4,c:colors[i%colors.length],
+    rot:Math.random()*6,vr:(Math.random()-.5)*.3,life:150});
+  run();
+}
+function run(){if(raf)return;const step=()=>{
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.22;p.vx*=.99;p.rot+=p.vr;p.life--;
+    cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillStyle=p.c;
+    cx.globalAlpha=Math.max(0,Math.min(1,p.life/40));
+    cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.62);cx.restore();});
+  parts=parts.filter(p=>p.life>0&&p.y<cv.height+40);
+  if(parts.length)raf=requestAnimationFrame(step);else{raf=null;cx.clearRect(0,0,cv.width,cv.height)}
+};raf=requestAnimationFrame(step);}
+
+showStart();
+</script>
+</body>
+</html>

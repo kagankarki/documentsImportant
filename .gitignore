@@ -1,0 +1,10 @@
+# Hassas kişisel belgeler — GİZLİLİK: bunlar repoya YÜKLENMEZ.
+# (Vukuatlı nüfus, SGK, SPAS, öğrenci belgesi = kimlik/sağlık verisi)
+*.pdf
+
+# Editör / araç ayarları
+.claude/
+
+# Geçici dosyalar
+*.tmp
+*.log
