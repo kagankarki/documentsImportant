@@ -1,10 +1,16 @@
-# Hassas kişisel belgeler — GİZLİLİK: bunlar repoya YÜKLENMEZ.
-# (Vukuatlı nüfus, SGK, SPAS, öğrenci belgesi = kimlik/sağlık verisi)
+# Ham kaynak belge (şifrelenmeden ÖNCEki hali) — repoya girmez
+document-source.xlsx
+*.xlsx
+
+# Eski PDF belgeleri
 *.pdf
+
+# Doğru cevaplar — GİZLİ, repoya girmez (build bunları kullanır)
+build/answers.local.json
 
 # Editör / araç ayarları
 .claude/
 
-# Geçici dosyalar
+# Geçici
 *.tmp
 *.log
